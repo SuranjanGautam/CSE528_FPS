@@ -36,6 +36,7 @@ public class BallShooter : MonoBehaviour
                 ball.name = "ball";
                 // Fire the ball 2 unit forward from the camera
                 ball.transform.position = transform.TransformPoint(2*Vector3.forward);
+                ball.transform.forward = transform.forward;
                 //ball_rb.velocity = transform.TransformDirection(new Vector3(0, 0, Force));
                 ball_rb.AddForce(transform.TransformDirection(new Vector3(0, 0, Force)));
                 ball_rb.AddTorque(Torque);
