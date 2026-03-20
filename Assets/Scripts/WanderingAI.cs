@@ -18,8 +18,9 @@ public class WanderingAI : MonoBehaviour
     private bool _alive;
 
     float yvel = 0;
-
-    bool useray = true;
+    [SerializeField]
+    float firerate = 200;
+    float cooldown = 0;
 
     void Start()
     {
@@ -30,30 +31,31 @@ public class WanderingAI : MonoBehaviour
     void Update()
     {
         if (!_alive) return; // this enemy may die before this enemy game object is destroyed
-
+        cooldown += Time.deltaTime;
         Ray ray = new Ray(transform.position, transform.forward);
 		RaycastHit hit;
         
-        if ((useray?Physics.Raycast(ray,  out hit) : Physics.SphereCast(ray,0.25f,out hit)))
+        if (Physics.Raycast(ray,  out hit))
         {
             GameObject hitObject = hit.transform.gameObject;
 
             //print($"{Vector3.Angle(hit.normal, -ray.direction)} dot {Vector3.Dot(hit.normal, Vector3.up)}");
             
-            if (hitObject.tag == "Player")
+            if (hitObject.tag == "Player" && cooldown > 60/firerate)
             {
+                cooldown = 0;
                 // Attack the player
                 if (_fireball == null)
                 {
                     _fireball = Instantiate(fireballPrefab);
-                    _fireball.transform.position = transform.TransformPoint(Vector3.forward * 1.5f);
+                    _fireball.transform.position = transform.TransformPoint(Vector3.forward * 1.5f + Vector3.up * 0.3f);
                     _fireball.transform.rotation = transform.rotation;
                     _fireball.GetComponent<Rigidbody>().linearVelocity =
                                 transform.TransformDirection(new Vector3(0, 0, Force));
                     _fireball.GetComponent<Rigidbody>().AddTorque(Torque);
                 }
             }
-            else if (hit.distance < obstacleRange && (Vector3.Angle(hit.normal, -ray.direction) > charcontrol.slopeLimit || Vector3.Dot(hit.normal,Vector3.up) <= 0))// && hitObject.tag != "Fire")
+            else if ((hit.distance < obstacleRange && (Vector3.Angle(hit.normal, -ray.direction) > charcontrol.slopeLimit || Vector3.Dot(hit.normal,Vector3.up) <= 0)) || charcontrol.velocity.magnitude < 0.8f * speed)// && hitObject.tag != "Fire")
             {               
                 float angle = Random.Range(-110.0f, 110.0f);
                 transform.Rotate(0, angle, 0);
@@ -68,7 +70,6 @@ public class WanderingAI : MonoBehaviour
         movement += Vector3.up * yvel;
 
         charcontrol.Move(movement * Time.deltaTime);
-        useray = charcontrol.velocity.magnitude > 0.9f * speed;
         //transform.Translate(0, 0, speed * Time.deltaTime);
     }
 
