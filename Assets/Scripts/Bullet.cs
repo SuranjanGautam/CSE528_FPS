@@ -2,11 +2,12 @@ using System.Collections;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
-{
-    [SerializeField]
-    float speed = 20f;
+{    
+    public float speed = 20f;
     [SerializeField]
     float lifetime = 2f;
+    [SerializeField]
+    bool usegravity = false;
 
     GameObject GM;  // GameManager
     
@@ -15,11 +16,11 @@ public class Bullet : MonoBehaviour
     void Start()
     {
         GM = GameObject.Find("GameManager");
-        StartCoroutine(SelfDestruct());
+        StartCoroutine(SelfDestruct(lifetime));
 
         var rb = GetComponent<Rigidbody>();
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rb.useGravity = false;
+        rb.useGravity = usegravity;
         rb.linearVelocity = transform.forward * speed;
     }
 
@@ -36,24 +37,28 @@ public class Bullet : MonoBehaviour
                 ai.SetAlive(false);
                 if (GM != null) GM.SendMessage("EnemyHit");
                 enemy.SendMessage("ReactToHit");
-            }
-
-            Destroy(gameObject);
+            }            
         }
 
         if (collisionInfo.gameObject.GetComponent<IReactiveTarget>() != null)
         {
             IReactiveTarget target = collisionInfo.gameObject.GetComponent<IReactiveTarget>();
-            target.ReactToHit();
-            Destroy(gameObject);
+            target.ReactToHit();            
         }
-        Destroy(gameObject);
+        DestoryAfterHit();
     }
 
-    private IEnumerator SelfDestruct()
+    void DestoryAfterHit()
     {
-        yield return new WaitForSeconds(1f);
+        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        GetComponent<Collider>().enabled = false;
+        GetComponent<MeshRenderer>().enabled = false;
+        StartCoroutine(SelfDestruct(0.2f));
+    }
 
-        Destroy(gameObject,lifetime);
+    private IEnumerator SelfDestruct(float time)
+    {
+        yield return new WaitForSeconds(time);
+        Destroy(gameObject);
     }
 }

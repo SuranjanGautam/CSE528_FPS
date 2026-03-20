@@ -21,7 +21,8 @@ public class MoveByNavMeshAgent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (isFollow && transform != null) agent.destination = transform.position;
+        else if (!isFollow && Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
 
@@ -33,7 +34,7 @@ public class MoveByNavMeshAgent : MonoBehaviour
                 agent.destination = hit.point;
             }
         }
-        else
-            if (isFollow && transform!=null) agent.destination = transform.position;
+        
+            
     }
 }

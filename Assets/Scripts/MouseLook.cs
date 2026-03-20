@@ -37,7 +37,7 @@ public class MouseLook : MonoBehaviour {
 			body.freezeRotation = true;
 	}
 
-	void Update() {
+	void LateUpdate() {
 		if (axes == RotationAxes.MouseX) {
 			transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityHor, 0);
 		}

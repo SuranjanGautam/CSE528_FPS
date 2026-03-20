@@ -4,50 +4,57 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-
     //bool for keeping track of gun's ability to fire
     private bool readyToFire;
+    public GunType WeaponType;
+    public float firerate = 200;
+    float cooldown = 20000;
+
     [SerializeField] private AudioClip gunShot;
     private AudioSource audioSource;
+    Animator anim;
+
+    [SerializeField] Transform FollowTarget;
 
     void Start ()
     {
         readyToFire = true;
         audioSource = GetComponent<AudioSource>();
+        anim = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        if (FollowTarget != null)
+        {     
+            if(Vector3.Distance(transform.position, FollowTarget.position) < 1f)
+                transform.position = Vector3.Lerp(transform.position, FollowTarget.position, 50 * Time.deltaTime);
+            else
+                transform.position = FollowTarget.position;
+            transform.rotation = Quaternion.Slerp(transform.rotation, FollowTarget.rotation, 50 * Time.deltaTime);
+        }
+        cooldown += Time.deltaTime;
     }
 
     public void Bang()
     {
-        StartCoroutine(ShootAnim());
+        anim.SetTrigger("Fire");
+        if (audioSource != null)
+        {            
+            audioSource.PlayOneShot(gunShot);
+        }
+        cooldown = 0;
     }
 
     //accessor for checking gun's state
     public bool ReadyToFire()
     {
-        return readyToFire;
+        return cooldown>60f/firerate;
     }
+}
 
-    //animation for gun recoil; set readyToFire to false while animation plays
-    private IEnumerator ShootAnim()
-    {
-        if (audioSource != null)
-        {
-            audioSource.clip = gunShot;
-            audioSource.Play();
-        }
-            readyToFire = false;
-
-        //rotate in small increments every 1/30th of a second
-        for(int x = 0; x < 4; x++)
-        {
-            transform.Rotate(-12f, 0, 0);
-            yield return new WaitForSeconds(0.033f);
-        }
-        for (int i = 0; i < 4; i++)
-        {
-            transform.Rotate(12f, 0, 0);
-            yield return new WaitForSeconds(0.033f);
-        }
-        readyToFire = true;
-    }
+public enum GunType
+{
+    SemiAuto,
+    Auto
 }
