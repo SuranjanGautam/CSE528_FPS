@@ -6,14 +6,19 @@ public class ReactiveTarget2 : MonoBehaviour , IReactiveTarget
     [SerializeField] private GameObject shatterPrefab;
     [SerializeField] private AudioClip death;
     private GameObject _shatter;
-	public void ReactToHit() 
+    bool dead = false;
+	public void ReactToHit(float amt = 0) 
     {
 		WanderingAI behavior = GetComponent<WanderingAI>();
 		if (behavior != null) {
 			behavior.SetAlive(false);
 		}
         GetComponent<AudioSource>().PlayOneShot(death);
-		StartCoroutine(Die());
+        if (!dead)
+        {
+            dead = true;
+            StartCoroutine(Die());
+        }
 	}
 
 	private IEnumerator Die() 

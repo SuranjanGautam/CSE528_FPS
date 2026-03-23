@@ -12,7 +12,7 @@ public class ReactiveTarget : MonoBehaviour , IReactiveTarget
         audioSource = GetComponent<AudioSource>();
     }
 
-	public void ReactToHit() 
+    public void ReactToHit(float amt = 0)
     {
 		WanderingAI behavior = GetComponent<WanderingAI>();
 		if (behavior != null) 
@@ -22,6 +22,7 @@ public class ReactiveTarget : MonoBehaviour , IReactiveTarget
 
         if (!dead)
         {
+            dead = true;
             if (audioSource != null) PlayHitSound();
 
             if (gameObject.name == "Enemy1")
@@ -58,8 +59,7 @@ public class ReactiveTarget : MonoBehaviour , IReactiveTarget
 	}
 
     private IEnumerator Die2() // by Payton Harris
-    {
-        dead = true;
+    {       
 
         int i = 0;
         while (i < 45)
@@ -83,5 +83,5 @@ public class ReactiveTarget : MonoBehaviour , IReactiveTarget
 
 public interface IReactiveTarget
 {
-    void ReactToHit();
+    void ReactToHit(float amt = 1);
 }

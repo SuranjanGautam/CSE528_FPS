@@ -44,7 +44,7 @@ public class Arrow : MonoBehaviour
             {
                 ai.SetAlive(false);
                 if (GM != null) GM.SendMessage("EnemyHit");
-                enemy.SendMessage("ReactToHit");
+                //enemy.SendMessage("ReactToHit");
             }
             transform.SetParent(collisionInfo.transform, true);
         }
@@ -53,7 +53,7 @@ public class Arrow : MonoBehaviour
         {
             transform.SetParent(collisionInfo.transform, true);
             IReactiveTarget target = collisionInfo.gameObject.GetComponent<IReactiveTarget>();
-            target.ReactToHit();
+            target.ReactToHit(2);
         }
         
         DestoryAfterHit();
@@ -61,6 +61,7 @@ public class Arrow : MonoBehaviour
 
     void DestoryAfterHit()
     {
+        GetComponent<TrailRenderer>().emitting = false;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;

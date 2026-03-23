@@ -14,7 +14,7 @@ public class ReactiveTarget3 : MonoBehaviour , IReactiveTarget
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void ReactToHit() 
+    public void ReactToHit(float amt = 0)
     {
 		WanderingAI behavior = GetComponent<WanderingAI>();
 		if (behavior != null) 

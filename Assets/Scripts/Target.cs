@@ -4,7 +4,7 @@ using UnityEngine;
 public class Target : MonoBehaviour, IReactiveTarget
 {
     bool canhit = true;
-    public void ReactToHit()
+    public void ReactToHit(float amt = 0)
     {
         if (!canhit) return;
         StartCoroutine(ReactToHitCR());

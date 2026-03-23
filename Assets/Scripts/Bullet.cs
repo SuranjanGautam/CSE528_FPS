@@ -36,7 +36,7 @@ public class Bullet : MonoBehaviour
             {
                 ai.SetAlive(false);
                 if (GM != null) GM.SendMessage("EnemyHit");
-                enemy.SendMessage("ReactToHit");
+                //enemy.SendMessage("ReactToHit",1);
             }            
         }
 
